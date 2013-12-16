@@ -41,18 +41,28 @@ class PowerConvert(Frame):
         
         self.checkVar = IntVar()
         self.futureCheckBox = Checkbutton(self, variable = self.checkVar, onvalue = 1, offvalue = 0)
-        self.futureCheckBox.grid(row=3, column=0, columnspan=1)
+        self.futureCheckBox.grid(row=2, column=0, columnspan=1)
         self.futureCheckBox["command"] = self.SwitchInputTime
-        
+
+        self.hourLabel = Label(self)
+        self.hourLabel.config(font=('console', 14, 'normal'))
+        self.hourLabel["text"] = "Hour :"
+        self.hourLabel.grid(row=2, column=1, columnspan=1)
+
         self.hourTime = Entry(self, state = DISABLED)
         self.hourTime.config(font=('console', 14, 'normal'))
         self.hourTime["width"] = 10
-        self.hourTime.grid(row=3, column=1, columnspan=1)
+        self.hourTime.grid(row=2, column=2, columnspan=1)
+
+        self.minLabel = Label(self)
+        self.minLabel.config(font=('console', 14, 'normal'))
+        self.minLabel["text"] = "Minute :"
+        self.minLabel.grid(row=2, column=3, columnspan=1)
 
         self.minTime = Entry(self, state = DISABLED)
         self.minTime.config(font=('console', 14, 'normal'))
         self.minTime["width"] = 10
-        self.minTime.grid(row=3, column=2, columnspan=1)
+        self.minTime.grid(row=2, column=4, columnspan=1)
         
         self.clear = Button(self)
         self.clear.config(font=('console', 14, 'normal'))
@@ -66,10 +76,16 @@ class PowerConvert(Frame):
         self.count["command"] = self.ConvertCount
         self.count.grid(row=3, column=5, columnspan=2)
 
+        
+        self.DistancePoint = Label(self)
+        self.DistancePoint.config(font=('console', 18, 'normal'))
+        self.DistancePoint["text"] = "Distance Time :"
+        self.DistancePoint.grid(row=4, column=3, columnspan=3)
+
         self.DistanceTime = Label(self)
         self.DistanceTime.config(font=('console', 18, 'normal'))
         self.DistanceTime["text"] = "Distance Time :"
-        self.DistanceTime.grid(row=4, column=0, columnspan=6)
+        self.DistanceTime.grid(row=4, column=0, columnspan=3)
         
         self.CurrentTime = Label(self)
         self.CurrentTime.config(font=('console', 18, 'normal'))
@@ -84,18 +100,27 @@ class PowerConvert(Frame):
     def PowerAndPowerConvertTime(self):
         if int(self.goalText.get()) > int(self.currentText.get()):
             min = (int(self.goalText.get()) - int(self.currentText.get())) * 8
-            self.DistanceTime["text"] = "Distance Time", min, "Min"
-            
             nowTime = datetime.now()
-            self.CurrentTime["text"] = "Current Time", nowTime.strftime('%m/%d %H:%M')
-
             allMin = timedelta(minutes = min)
             after = nowTime + allMin
 
-            self.EstimatedTime["text"] = "Estimated Time", after.strftime('%m/%d %H:%M')            
+            self.ShowResult(min, nowTime, after)
             self.SaveLog();
         else:
             print "Error Value"
+
+    def ShowResult(self, min, nowTime, afterTime):
+        '''
+            give the value, show to the view.
+        '''
+        if self.checkVar.get():
+            self.DistancePoint["text"] = "Point : ", min
+            self.DistanceTime["text"] = ""
+        else:
+            self.DistancePoint["text"] = ""
+            self.DistanceTime["text"] = "Distance Time", min, "Min"
+        self.CurrentTime["text"] = "Current Time", nowTime.strftime('%m/%d %H:%M')
+        self.EstimatedTime["text"] = "Estimated Time", afterTime.strftime('%m/%d %H:%M')            
 
     def ConvertCount(self):
         '''
@@ -115,11 +140,16 @@ class PowerConvert(Frame):
         m = int(self.minTime.get())
         isRightFormat = (h < 24)&(m < 60)
         if isRightFormat:
-            print h, m
-            print nowTime.time()
-            afterTime = nowTime.replace(hour = h, minute = m)
-            time = afterTime - nowTime
-            print time
+            afterTime = nowTime
+            if nowTime.time().hour > h :
+                oneDay = timedelta(days = 1)
+                afterTime = nowTime + oneDay
+                
+            afterTime = afterTime.replace(hour = h, minute = m)
+            distanceTime = afterTime - nowTime
+            minutes = distanceTime.seconds / 60
+            point = (minutes / 8) + int(self.currentText.get())
+            self.ShowResult(point, nowTime, afterTime)
         else:
             print "input wrong."
 
