@@ -141,9 +141,13 @@ class PowerConvert(Frame):
         isRightFormat = (h < 24)&(m < 60)
         if isRightFormat:
             afterTime = nowTime
-            if nowTime.time().hour > h :
+            if nowTime.time().hour > h:
                 oneDay = timedelta(days = 1)
                 afterTime = nowTime + oneDay
+            elif nowTime.time().hour == h:
+                if nowTime.time().minute > m:
+                    oneDay = timedelta(days = 1)
+                    afterTime = nowTime + oneDay
                 
             afterTime = afterTime.replace(hour = h, minute = m)
             distanceTime = afterTime - nowTime
