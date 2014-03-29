@@ -114,13 +114,13 @@ class PowerConvert(Frame):
             give the value, show to the view.
         '''
         if self.checkVar.get():
-            self.DistancePoint["text"] = "Point : ", min
+            self.DistancePoint["text"] = "Point : %d" % min
             self.DistanceTime["text"] = ""
         else:
             self.DistancePoint["text"] = ""
-            self.DistanceTime["text"] = "Distance Time", min, "Min"
-        self.CurrentTime["text"] = "Current Time", nowTime.strftime('%m/%d %H:%M')
-        self.EstimatedTime["text"] = "Estimated Time", afterTime.strftime('%m/%d %H:%M')            
+            self.DistanceTime["text"] = "Distance Time %d Min" % min
+        self.CurrentTime["text"] = "Current Time %s" % nowTime.strftime('%m/%d %H:%M')
+        self.EstimatedTime["text"] = "Estimated Time %s" % afterTime.strftime('%m/%d %H:%M')            
 
     def ConvertCount(self):
         '''
